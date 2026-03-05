@@ -1,0 +1,86 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Mono:wght@400;500&display=swap');
+
+@theme {
+  /*
+   * Brand color palette — Seven Sixty Tallow
+   *
+   * sand   #eacfa6  Primary background. Warm peach-sand.
+   * sage   #dddfca  Secondary background. Muted olive-sage.
+   * rust   #9B3D13  Primary CTA / action. Deep terracotta.
+   * olive  #877d5b  Secondary accent. Earthy olive-brown.
+   * wheat  #C8A052  Tertiary accent. Warm golden.
+   * espresso       Very dark brown. Primary text.
+   * muted          Warm dark olive. Subdued / secondary text.
+   */
+  --color-sand: #EDEAE3;
+  --color-sage: #F3E8D5;
+  --color-rust: #9B3D13;
+  --color-olive: #877d5b;
+  --color-wheat: #C8A052;
+  --color-espresso: #1E1208;
+  --color-muted: #6b5c40;
+
+  /* Typography */
+  --font-family-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-display: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", serif;
+  --font-family-label: "DM Mono", ui-monospace, "Courier New", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-sand);
+  color: var(--color-espresso);
+  font-family: var(--font-family-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Entrance Animations ─────────────────────────────────────────── */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.animate-fade-up {
+  opacity: 0;
+  animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+  opacity: 0;
+  animation: fade-in 1s ease-out forwards;
+}
+
+.animate-scale-in {
+  opacity: 0;
+  transform-origin: left center;
+  animation: scale-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

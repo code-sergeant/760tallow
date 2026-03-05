@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:vite.dev)",
+      "WebFetch(domain:shopify.dev)",
+      "WebFetch(domain:designrevision.com)",
+      "WebFetch(domain:thelinuxcode.com)",
+      "WebFetch(domain:blog.devgenius.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:dev.to)",
+      "Bash(npm install 2>&1)",
+      "Bash(npx tsc --noEmit 2>&1)",
+      "Bash(npm run build 2>&1)",
+      "Bash(npm run type-check 2>&1)"
+    ]
+  },
+  "enableAllProjectMcpServers": false
+}
