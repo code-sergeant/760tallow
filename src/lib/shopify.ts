@@ -240,10 +240,14 @@ function assertNoErrors(errors: unknown, userErrors?: Array<{ message: string }>
 
 export async function fetchProducts(): Promise<ShopifyProduct[]> {
   if (!client) return MOCK_PRODUCTS;
-  const { data, errors } = await client.request(GET_PRODUCTS);
-  assertNoErrors(errors);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data as any).products.edges.map((e: { node: ShopifyProduct }) => e.node);
+  try {
+    const { data, errors } = await client.request(GET_PRODUCTS);
+    assertNoErrors(errors);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (data as any).products.edges.map((e: { node: ShopifyProduct }) => e.node);
+  } catch {
+    return MOCK_PRODUCTS;
+  }
 }
 
 export async function fetchCart(cartId: string): Promise<ShopifyCart | null> {
