@@ -104,7 +104,7 @@ export default function Hero() {
           >
             Most tallow brands use cheap muscle fat. We use 100% rendered beef
             suet — a nutrient-dense internal fat that actually absorbs into your
-            skin. No beefy smell, no seed oils, just pure hydration for the sun,
+            skin. No beefy smell, no industrial seed oils, just pure hydration for the sun,
             surf, and desert.
           </p>
 
@@ -138,7 +138,7 @@ export default function Hero() {
             className="animate-fade-up flex flex-wrap gap-2 mt-8"
             style={{ animationDelay: '560ms' }}
           >
-            {['Zero Synthetic Fragrances', 'Zero Chemical Stabilizers', 'No Seed Oils'].map((badge) => (
+            {['Zero Synthetic Fragrances', 'Zero Chemical Stabilizers', 'No IndustrialSeed Oils'].map((badge) => (
               <span
                 key={badge}
                 className="font-label text-muted"

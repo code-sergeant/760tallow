@@ -19,8 +19,8 @@ export default function App() {
         <Nav />
         <main className="flex-1">
           <Hero />
-          <Differentiator />
           <ProductCatalog onSelectProduct={setSelectedProduct} />
+          <Differentiator />
           <Origins />
         </main>
         <Footer />

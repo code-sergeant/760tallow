@@ -13,8 +13,8 @@ const origins: OriginPoint[] = [
     description: 'Wild-harvested local beeswax and honey.',
   },
   {
-    location: 'Wyoming / California',
-    description: 'Pasture-raised, 100% pure beef suet.',
+    location: 'New Zealand',
+    description: 'Pasture-raised, grass-fed, 100% pure beef suet from our friends in New Zealand.',
   },
 ];
 

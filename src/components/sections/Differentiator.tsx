@@ -15,7 +15,7 @@ const rows: ComparisonRow[] = [
   {
     attribute: 'The Smell',
     them: 'Carries a distinct "beefy" odor that brands try to cover up with heavy essential oils.',
-    us: 'Naturally neutral and completely odorless.',
+    us: 'Naturally neutral and light-bodied.',
   },
   {
     attribute: 'The Feel',
