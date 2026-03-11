@@ -10,5 +10,5 @@
     "composite": true,
     "types": ["node"]
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.d.ts"]
 }
