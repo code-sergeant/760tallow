@@ -138,7 +138,7 @@ export default function Hero() {
             className="animate-fade-up flex flex-wrap gap-2 mt-8"
             style={{ animationDelay: '560ms' }}
           >
-            {['Zero Synthetic Fragrances', 'Zero Chemical Stabilizers', 'No IndustrialSeed Oils'].map((badge) => (
+            {['Zero Synthetic Fragrances', 'Zero Chemical Stabilizers', 'No Industrial Seed Oils'].map((badge) => (
               <span
                 key={badge}
                 className="font-label text-muted"
