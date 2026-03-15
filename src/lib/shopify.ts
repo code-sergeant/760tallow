@@ -132,6 +132,7 @@ const GET_PRODUCTS = /* GraphQL */ `
           id
           title
           description
+          descriptionHtml
           handle
           images(first: 1) {
             edges {
@@ -141,7 +142,7 @@ const GET_PRODUCTS = /* GraphQL */ `
               }
             }
           }
-          variants(first: 1) {
+          variants(first: 25) {
             edges {
               node {
                 id
@@ -228,12 +229,44 @@ const CART_LINES_REMOVE = /* GraphQL */ `
 
 function assertNoErrors(errors: unknown, userErrors?: Array<{ message: string }>) {
   if (errors) {
-    const msg = errors instanceof Error ? errors.message : 'Shopify API error';
+    const msg = extractErrorMessage(errors);
     throw new Error(msg);
   }
   if (userErrors?.length) {
     throw new Error(userErrors[0].message);
   }
+}
+
+function extractErrorMessage(err: unknown): string {
+  if (!err) return 'Shopify API error';
+  if (err instanceof Error) return err.message;
+
+  if (Array.isArray(err)) {
+    const first = err[0];
+    if (typeof first === 'string' && first) return first;
+    if (
+      first &&
+      typeof first === 'object' &&
+      'message' in first &&
+      typeof (first as { message?: unknown }).message === 'string'
+    ) {
+      return (first as { message: string }).message;
+    }
+  }
+
+  if (typeof err === 'object' && err !== null) {
+    if ('message' in err && typeof (err as { message?: unknown }).message === 'string') {
+      return (err as { message: string }).message;
+    }
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return 'Shopify API error';
+    }
+  }
+
+  if (typeof err === 'string' && err) return err;
+  return 'Shopify API error';
 }
 
 // ─── Exported API functions ───────────────────────────────────────────────────
@@ -245,8 +278,11 @@ export async function fetchProducts(): Promise<ShopifyProduct[]> {
     assertNoErrors(errors);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (data as any).products.edges.map((e: { node: ShopifyProduct }) => e.node);
-  } catch {
-    return MOCK_PRODUCTS;
+  } catch (err) {
+    // Only use mock catalog when Shopify is intentionally unconfigured.
+    // If Shopify is configured but failing, surface the real API error.
+    if (!shopifyConfigured) return MOCK_PRODUCTS;
+    throw new Error(extractErrorMessage(err));
   }
 }
 

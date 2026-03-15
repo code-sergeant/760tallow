@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { ShopifyProduct } from '@/types/shopify';
-import { fetchProducts } from '@/lib/shopify';
+import { fetchProducts, shopifyConfigured } from '@/lib/shopify';
+import { useCart } from '@/hooks/useCart';
 import ProductCard from '@/components/ui/ProductCard';
 
 interface ProductCatalogProps {
@@ -33,9 +34,11 @@ function SkeletonCard() {
 }
 
 export default function ProductCatalog({ onSelectProduct }: ProductCatalogProps) {
+  const { addToCart } = useCart();
   const [products, setProducts] = useState<ShopifyProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [addingProductId, setAddingProductId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts()
@@ -48,6 +51,23 @@ export default function ProductCatalog({ onSelectProduct }: ProductCatalogProps)
         setLoading(false);
       });
   }, []);
+
+  async function handleAddToCart(product: ShopifyProduct) {
+    const firstAvailableVariant = product.variants.edges
+      .map((edge) => edge.node)
+      .find((variant) => variant.availableForSale);
+    if (!firstAvailableVariant) return;
+    if (!shopifyConfigured || firstAvailableVariant.id.startsWith('mock-')) {
+      onSelectProduct(product);
+      return;
+    }
+    setAddingProductId(product.id);
+    try {
+      await addToCart(firstAvailableVariant.id);
+    } finally {
+      setAddingProductId(null);
+    }
+  }
 
   return (
     <section id="the-lineup" className="bg-sand py-24 px-6">
@@ -86,14 +106,20 @@ export default function ProductCatalog({ onSelectProduct }: ProductCatalogProps)
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading
             ? Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
-            : products.map((product) => (
+            : products.map((product) => {
+                const soldOut = !product.variants.edges.some((edge) => edge.node.availableForSale);
+                return (
                 <ProductCard
                   key={product.id}
                   product={product}
                   ctaLabel={ctaByHandle[product.handle] ?? 'Add to Cart'}
                   onSelect={() => onSelectProduct(product)}
+                  onAddToCart={() => handleAddToCart(product)}
+                  isAddingToCart={addingProductId === product.id}
+                  isSoldOut={soldOut}
                 />
-              ))}
+                );
+              })}
         </div>
 
         {!loading && !error && products.length === 0 && (

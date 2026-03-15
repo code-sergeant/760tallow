@@ -5,6 +5,9 @@ interface ProductCardProps {
   product: ShopifyProduct;
   ctaLabel?: string;
   onSelect?: () => void;
+  onAddToCart?: () => void;
+  isAddingToCart?: boolean;
+  isSoldOut?: boolean;
 }
 
 function formatPrice(amount: string, currencyCode: string): string {
@@ -15,7 +18,14 @@ function formatPrice(amount: string, currencyCode: string): string {
   }).format(parseFloat(amount));
 }
 
-export default function ProductCard({ product, ctaLabel = 'Add to Cart', onSelect }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  ctaLabel = 'Add to Cart',
+  onSelect,
+  onAddToCart,
+  isAddingToCart = false,
+  isSoldOut = false,
+}: ProductCardProps) {
   const firstVariant = product.variants.edges[0]?.node;
   const firstImage = product.images.edges[0]?.node;
 
@@ -84,9 +94,10 @@ export default function ProductCard({ product, ctaLabel = 'Add to Cart', onSelec
 
           <Button
             size="sm"
-            onClick={onSelect}
+            onClick={onAddToCart ?? onSelect}
+            disabled={isAddingToCart || isSoldOut}
           >
-            {ctaLabel}
+            {isAddingToCart ? 'Adding...' : isSoldOut ? 'Sold Out' : ctaLabel}
           </Button>
         </div>
       </div>

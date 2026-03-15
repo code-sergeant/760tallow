@@ -21,13 +21,25 @@ function formatPrice(amount: string, currencyCode: string): string {
 export default function ProductDetail({ product, onClose }: ProductDetailProps) {
   const { addToCart, isLoading } = useCart();
   const [adding, setAdding] = useState(false);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const isOpen = product !== null;
 
   const detail = product ? productDetails[product.handle] : null;
+  const variants = product?.variants.edges.map((edge) => edge.node) ?? [];
   const firstVariant = product?.variants.edges[0]?.node;
+  const selectedVariant =
+    product?.variants.edges.find((edge) => edge.node.id === selectedVariantId)?.node ?? firstVariant;
   const firstImage = product?.images.edges[0]?.node;
-  const available = firstVariant?.availableForSale ?? false;
+  const available = selectedVariant?.availableForSale ?? false;
+  const hasVariantChoices =
+    variants.length > 1 || (variants.length === 1 && variants[0].title !== 'Default Title');
+  const richDescriptionHtml = product?.descriptionHtml?.trim();
+  const description = product?.description?.trim() || detail?.fullDescription;
+
+  useEffect(() => {
+    setSelectedVariantId(firstVariant?.id ?? null);
+  }, [product?.id, firstVariant?.id]);
 
   // Escape to close
   useEffect(() => {
@@ -44,10 +56,10 @@ export default function ProductDetail({ product, onClose }: ProductDetailProps) 
   }, [isOpen]);
 
   async function handleAddToCart() {
-    if (!firstVariant || !available || !shopifyConfigured) return;
+    if (!selectedVariant || !available || !shopifyConfigured) return;
     setAdding(true);
     try {
-      await addToCart(firstVariant.id);
+      await addToCart(selectedVariant.id);
     } finally {
       setAdding(false);
     }
@@ -142,26 +154,74 @@ export default function ProductDetail({ product, onClose }: ProductDetailProps) 
                   >
                     {product.title}
                   </h1>
-                  {firstVariant && (
+                  {selectedVariant && (
                     <p
                       className="font-display text-espresso flex-shrink-0"
                       style={{ fontSize: '1.5rem', fontWeight: 700 }}
                     >
-                      {formatPrice(firstVariant.price.amount, firstVariant.price.currencyCode)}
+                      {formatPrice(selectedVariant.price.amount, selectedVariant.price.currencyCode)}
                     </p>
                   )}
                 </div>
               </div>
 
               {/* Description */}
-              {detail?.fullDescription && (
-                <p className="text-muted leading-relaxed mb-8" style={{ fontSize: '0.975rem', lineHeight: 1.75 }}>
-                  {detail.fullDescription}
-                </p>
+              {richDescriptionHtml ? (
+                <div
+                  className="mb-10"
+                  // Shopify admin controls this content; rendering as HTML preserves merchant formatting.
+                  dangerouslySetInnerHTML={{ __html: richDescriptionHtml }}
+                />
+              ) : (
+                description && (
+                  <p className="text-muted leading-relaxed mb-8" style={{ fontSize: '0.975rem', lineHeight: 1.75 }}>
+                    {description}
+                  </p>
+                )
+              )}
+
+              {/* Variant selector */}
+              {hasVariantChoices && (
+                <div className="mb-8">
+                  <p
+                    className="font-label text-espresso mb-3"
+                    style={{ fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 500 }}
+                  >
+                    Choose Option
+                  </p>
+                  <div className="grid gap-2">
+                    {variants.map((variant) => {
+                      const isSelected = selectedVariant?.id === variant.id;
+                      const soldOut = !variant.availableForSale;
+                      return (
+                        <button
+                          key={variant.id}
+                          type="button"
+                          onClick={() => setSelectedVariantId(variant.id)}
+                          disabled={soldOut}
+                          className={`w-full rounded-lg border px-3 py-2 text-left transition-colors cursor-pointer ${
+                            isSelected
+                              ? 'border-rust bg-rust/5'
+                              : 'border-espresso/15 hover:border-espresso/35'
+                          } ${soldOut ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="text-sm text-espresso">
+                              {variant.title === 'Default Title' ? 'Standard' : variant.title}
+                            </span>
+                            <span className="text-sm font-medium text-espresso">
+                              {formatPrice(variant.price.amount, variant.price.currencyCode)}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
 
               {/* Benefits */}
-              {detail?.benefits && detail.benefits.length > 0 && (
+              {!richDescriptionHtml && detail?.benefits && detail.benefits.length > 0 && (
                 <div className="mb-8">
                   <p
                     className="font-label text-espresso mb-4"
@@ -183,7 +243,7 @@ export default function ProductDetail({ product, onClose }: ProductDetailProps) 
               )}
 
               {/* Ingredients */}
-              {detail?.ingredients && (
+              {!richDescriptionHtml && detail?.ingredients && (
                 <div className="mb-8 p-5 rounded-xl bg-sage">
                   <p
                     className="font-label text-espresso mb-2"
@@ -196,7 +256,7 @@ export default function ProductDetail({ product, onClose }: ProductDetailProps) 
               )}
 
               {/* How to use */}
-              {detail?.howToUse && (
+              {!richDescriptionHtml && detail?.howToUse && (
                 <div className="mb-10">
                   <p
                     className="font-label text-espresso mb-2"
@@ -212,7 +272,7 @@ export default function ProductDetail({ product, onClose }: ProductDetailProps) 
               <Button
                 size="lg"
                 className="w-full sm:w-auto"
-                disabled={!available || adding || isLoading}
+                disabled={!selectedVariant || !available || adding || isLoading}
                 onClick={handleAddToCart}
               >
                 {adding ? 'Adding...' : available ? 'Add to Cart' : 'Sold Out'}
