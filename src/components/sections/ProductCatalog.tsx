@@ -70,7 +70,7 @@ export default function ProductCatalog({ onSelectProduct }: ProductCatalogProps)
   }
 
   return (
-    <section id="the-lineup" className="bg-sand py-24 px-6">
+    <section id="the-lineup" className="bg-sand py-10 px-6">
       <div className="max-w-5xl mx-auto">
         <div className="mb-12">
           <p

@@ -31,7 +31,7 @@ export default function Hero() {
       <div aria-hidden="true" className="absolute top-0 left-0 right-0 h-px bg-espresso/10" />
 
       {/* Content */}
-      <div className="relative z-10 max-w-6xl mx-auto w-full px-6 py-28 md:py-36">
+      <div className="relative z-10 max-w-6xl mx-auto w-full px-6 py-10">
         <div style={{ maxWidth: '640px' }}>
 
           {/* Eyebrow */}
