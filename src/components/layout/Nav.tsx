@@ -3,8 +3,8 @@ import CartIcon from '@/components/ui/CartIcon';
 import Button from '@/components/ui/Button';
 
 const navLinks = [
-  { label: 'Why Suet?', href: '#why-suet' },
   { label: 'The Lineup', href: '#the-lineup' },
+  { label: 'Why Suet?', href: '#why-suet' },
   { label: 'Our Roots', href: '#our-roots' },
 ];
 
