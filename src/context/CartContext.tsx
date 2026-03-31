@@ -78,7 +78,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 // ─── Context ──────────────────────────────────────────────────────────────────
 
 interface CartContextValue extends CartState {
-  addToCart: (variantId: string) => Promise<void>;
+  addToCart: (variantId: string, openCart?: boolean) => Promise<void>;
   updateLine: (lineId: string, quantity: number) => Promise<void>;
   removeLine: (lineId: string) => Promise<void>;
   openCart: () => void;
@@ -115,7 +115,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addToCart = useCallback(
-    async (variantId: string) => {
+    async (variantId: string, openCart = true) => {
       dispatch({ type: 'SET_LOADING', payload: true });
       try {
         const cart = state.cartId
@@ -124,7 +124,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         localStorage.setItem(STORAGE_KEY, cart.id);
         dispatch({ type: 'SET_CART', payload: cart });
-        dispatch({ type: 'OPEN_CART' });
+        if (openCart) {
+          dispatch({ type: 'OPEN_CART' });
+        }
       } catch (err) {
         dispatch({
           type: 'SET_ERROR',

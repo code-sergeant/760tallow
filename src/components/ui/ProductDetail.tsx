@@ -59,7 +59,8 @@ export default function ProductDetail({ product, onClose }: ProductDetailProps) 
     if (!selectedVariant || !available || !shopifyConfigured) return;
     setAdding(true);
     try {
-      await addToCart(selectedVariant.id);
+      await addToCart(selectedVariant.id, false);
+      onClose();
     } finally {
       setAdding(false);
     }
